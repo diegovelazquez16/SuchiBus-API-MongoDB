@@ -1,23 +1,14 @@
 const { getDB } = require('../../config');
 const { ObjectId } = require('mongodb');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+
 const dotenv = require('dotenv');
 
 dotenv.config();
 
-const JWT_SECRET = process.env.JWT_SECRET;
+
 const collection_name = 'Rutas'
 
-const authenticateToken = (req, res, next) => {
-  const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1];
-  if (!token) return res.sendStatus(401); 
-  jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403);
-    req.user = user;
-    next();
-  });
-};
+
 exports.getRutas = async (req, res) => {
   try {
     const db = getDB();
