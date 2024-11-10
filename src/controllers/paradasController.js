@@ -7,7 +7,6 @@ dotenv.config();
 
 const collection_name = 'Paradas'
 
-
 exports.createParadas = async (req, res) => {
   const newParada = {
     nombre: req.body.nombre,
@@ -71,7 +70,6 @@ exports.deleteParada = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-
 exports.updateParada = async (req, res) => {
   const paradaId = req.params.id;
   if(!ObjectId.isValid(paradaId)){
@@ -98,7 +96,6 @@ exports.updateParada = async (req, res) => {
     } catch(err){
       res.status(500).json({message: err.message});
     }
-
 };
 
 

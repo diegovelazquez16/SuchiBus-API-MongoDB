@@ -1,14 +1,8 @@
 const { getDB } = require('../../config');
 const { ObjectId } = require('mongodb');
-
 const dotenv = require('dotenv');
-
 dotenv.config();
-
-
 const collection_name = 'Rutas'
-
-
 exports.getRutas = async (req, res) => {
   try {
     const db = getDB();
