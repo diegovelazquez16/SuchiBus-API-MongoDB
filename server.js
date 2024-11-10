@@ -11,9 +11,11 @@ app.use(express.json());
 connectDB();
 
 const userRoutes = require('./src/routes/userRoutes');
-const rutasRoutes = require('./src/routes/rutasRoutes')
+const rutasRoutes = require('./src/routes/rutasRoutes');
+const paradasRoutes = require ('./src/routes/paradasRoutes');
 app.use('/api/users', userRoutes);
 app.use('/api/rutas', rutasRoutes);
+app.use('/api/paradas', paradasRoutes);
 app.listen(port, () => {
   console.log(`API activa en http://localhost:${port}`);
 });
