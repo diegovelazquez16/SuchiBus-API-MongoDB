@@ -6,6 +6,7 @@ router.post('/', paradasController.createParadas);
 router.get('/', paradasController.getParadas);
 router.get('/:id', paradasController.getParadabyId);
 router.delete('/:id', paradasController.deleteParada);
+router.put('/:id', paradasController.updateParada);
 
 
 module.exports = router;

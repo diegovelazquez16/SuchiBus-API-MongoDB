@@ -12,7 +12,6 @@ exports.createParadas = async (req, res) => {
   const newParada = {
     nombre: req.body.nombre,
     ubicacion: req.body.ubicacion,
-
   };
 
   try {
@@ -72,4 +71,34 @@ exports.deleteParada = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-module.exports.authenticateToken = authenticateToken;
+
+exports.updateParada = async (req, res) => {
+  const paradaId = req.params.id;
+  if(!ObjectId.isValid(paradaId)){
+    return res.status(400).json({message: 'ID de ruta invalido'});
+  }
+
+  const updatedData = {
+    nombre: req.body.nombre,
+    ubicacion: req.body.ubicacion
+  };
+
+  try{
+    const db = getDB();
+    const result = await db.collection(collection_name).updateOne(
+      {_id: new ObjectId(paradaId)},
+      {$set: updatedData}
+    );
+
+    if (result.matchedCount === 0){
+      return res.status(404).json({message: 'Parada no encontrada'})
+    }
+    res.json({message: 'La parada se actualizo correctamente'});
+  
+    } catch(err){
+      res.status(500).json({message: err.message});
+    }
+
+};
+
+

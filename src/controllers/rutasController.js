@@ -74,4 +74,33 @@ exports.deleteRuta = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-module.exports.authenticateToken = authenticateToken;
+exports.updateRutas = async (req, res) => {
+  const rutaId = req.params.id;
+  if(!ObjectId.isValid(rutaId)){
+    return res.status(400).json({message: 'ID de ruta invalido'});
+  }
+
+  const updatedData = {
+    distancia: req.body.distancia,
+    origen: req.body.origen,
+    destino: req.body.destino,
+    tAproximado: req.body.tAproximado,
+  };
+  try{
+    const db = getDB();
+    const result = await db.collection(collection_name).updateOne(
+      {_id: new ObjectId(rutaId)},
+      {$set: updatedData}
+    );
+
+    if (result.matchedCount === 0){
+      return res.status(404).json({message: 'Ruta no encontrada'})
+    }
+    res.json({message: 'La ruta se actualizo correctamente'});
+  
+    } catch(err){
+      res.status(500).json({message: err.message});
+    }
+
+};
+
