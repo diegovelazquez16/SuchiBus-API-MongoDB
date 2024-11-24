@@ -9,13 +9,14 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 connectDB();
-
+const mapasRutasRoutes = require('./src/routes/rutasMapsRoutes');
+const mapasRoutes = require ('./src/routes/paradasMapsRoutes')
 const userRoutes = require('./src/routes/userRoutes');
-const rutasRoutes = require('./src/routes/rutasRoutes');
-const paradasRoutes = require ('./src/routes/paradasRoutes');
+
+app.use('/mapasRuta', mapasRutasRoutes)
+app.use('/mapas', mapasRoutes)
 app.use('/api/users', userRoutes);
-app.use('/api/rutas', rutasRoutes);
-app.use('/api/paradas', paradasRoutes);
+
 app.listen(port, () => {
   console.log(`API activa en http://localhost:${port}`);
 });
