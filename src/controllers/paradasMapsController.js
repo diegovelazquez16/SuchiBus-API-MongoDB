@@ -37,16 +37,16 @@ exports.getMapas = async (req, res) => {
 };
 
 exports.createMapa = async (req, res) => {
-    const { location, zoom } = req.body;
+    const { location, zoom, rutaId } = req.body;
   
     if (!location || typeof location !== 'string' || location.trim() === '') {
       return res.status(400).json({ message: 'El campo "location" es obligatorio y debe ser un texto válido.' });
     }
   
     try {
-      const { puntoParadaURL, puntoParadaHTML } = generarPuntoParada(location, zoom);
+      const { puntoParadaURL, puntoParadaHTML } = generarPuntoParada(location, zoom, rutaId);
   
-      const newMapa = { location, zoom, puntoParadaURL, puntoParadaHTML };
+      const newMapa = { location, zoom, rutaId, puntoParadaURL, puntoParadaHTML };
   
       const db = getDB();
       const result = await db.collection(collection_name).insertOne(newMapa);
@@ -86,19 +86,19 @@ exports.updateMapa = async (req, res) => {
     return res.status(400).json({ message: 'ID de mapa no válido' });
   }
 
-  const { location, zoom } = req.body;
+  const { location, zoom, rutaId } = req.body;
 
   if (!location) {
     return res.status(400).json({ message: 'El campo "location" es obligatorio.' });
   }
 
   try {
-    const { puntoParadaURL, puntoParadaHTML } = generarPuntoParada(location, zoom);
+    const { puntoParadaURL, puntoParadaHTML } = generarPuntoParada(location, zoom, rutaId);
 
     const db = getDB();
     const result = await db.collection(collection_name).updateOne(
       { _id: new ObjectId(mapaId) },
-      { $set: { location, zoom, puntoParadaURL, puntoParadaHTML } }
+      { $set: { location, zoom,rutaId, puntoParadaURL, puntoParadaHTML } }
     );
 
     if (result.matchedCount === 0) {

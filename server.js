@@ -10,11 +10,11 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 connectDB();
 const mapasRutasRoutes = require('./src/routes/rutasMapsRoutes');
-const mapasRoutes = require ('./src/routes/paradasMapsRoutes')
+const paradasRoutes = require ('./src/routes/paradasMapsRoutes')
 const userRoutes = require('./src/routes/userRoutes');
 
 app.use('/mapasRuta', mapasRutasRoutes)
-app.use('/mapas', mapasRoutes)
+app.use('/paradas', paradasRoutes)
 app.use('/api/users', userRoutes);
 
 app.listen(port, () => {

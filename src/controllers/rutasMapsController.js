@@ -31,22 +31,22 @@ exports.getallMapasRutas = async (req, res) => {
 };
 
 exports.createMapaRuta = async (req, res) => {
-  const { origin, destination, mode } = req.body;
+  const { origin, destination, mode, terminal } = req.body;
 
   if (!origin || !destination) {
-    return res.status(400).json({ message: 'Se requieren los campos "origin" y "destination".' });
+    return res.status(400).json({ message: 'Se requieren los campos "origin",  "destination y "terminal"' });
   }
 
   try {
-    const { mapaRutaUrl, mapaRutaHTML } = generarMapaRuta(origin, destination, mode);
+    const { mapaRutaUrl, mapaRutaHTML } = generarMapaRuta(origin, destination, mode, terminal);
 
-    const newIframe = { origin, destination, mode, mapaRutaUrl, mapaRutaHTML };
+    const newIframe = { origin, destination, mode, terminal, mapaRutaUrl, mapaRutaHTML };
 
     const db = getDB();
     const result = await db.collection(collection_name).insertOne(newIframe);
     res.status(201).json({
       message: 'Mapa de ruta creado exitosamente',
-      iframeId: result.insertedId,
+      mapaRutaId: result.insertedId,
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -54,17 +54,17 @@ exports.createMapaRuta = async (req, res) => {
 };
 
 exports.getMapaRutaById = async (req, res) => {
-  const iframeId = req.params.id;
-  if (!ObjectId.isValid(iframeId)) {
-    return res.status(400).json({ message: 'ID de iframe no válido' });
+  const mapaRutaId = req.params.id;
+  if (!ObjectId.isValid(mapaRutaId)) {
+    return res.status(400).json({ message: 'ID de mapa de ruta no válido' });
   }
 
   try {
     const db = getDB();
-    const iframe = await db.collection(collection_name).findOne({ _id: new ObjectId(iframeId) });
+    const iframe = await db.collection(collection_name).findOne({ _id: new ObjectId(mapaRutaId) });
 
     if (!iframe) {
-      return res.status(404).json({ message: 'Iframe no encontrado' });
+      return res.status(404).json({ message: 'Mapa no encontrado' });
     }
 
     res.json(iframe);
@@ -74,24 +74,24 @@ exports.getMapaRutaById = async (req, res) => {
 };
 
 exports.updateMapaRuta = async (req, res) => {
-  const iframeId = req.params.id;
-  if (!ObjectId.isValid(iframeId)) {
+  const mapaRutaId = req.params.id;
+  if (!ObjectId.isValid(mapaRutaId)) {
     return res.status(400).json({ message: 'ID de iframe no válido' });
   }
 
-  const { origin, destination, mode } = req.body;
+  const { origin, destination, mode, terminal } = req.body;
 
   if (!origin || !destination) {
-    return res.status(400).json({ message: 'Se requieren los campos "origin" y "destination".' });
+    return res.status(400).json({ message: 'Se requieren los campos "origin", "destination" y "terminal"' });
   }
 
   try {
-    const { iframeUrl, iframeHTML } = generarMapaRuta(origin, destination, mode);
+    const { iframeUrl, iframeHTML } = generarMapaRuta(origin, destination, mode, terminal);
 
     const db = getDB();
     const result = await db.collection(collection_name).updateOne(
-      { _id: new ObjectId(iframeId) },
-      { $set: { origin, destination, mode, iframeUrl, iframeHTML } }
+      { _id: new ObjectId(mapaRutaId) },
+      { $set: { origin, destination, mode, terminal, iframeUrl, iframeHTML } }
     );
 
     if (result.matchedCount === 0) {
@@ -105,14 +105,14 @@ exports.updateMapaRuta = async (req, res) => {
 };
 
 exports.deleteMapaRuta = async (req, res) => {
-  const iframeId = req.params.id;
-  if (!ObjectId.isValid(iframeId)) {
+  const mapaRutaId = req.params.id;
+  if (!ObjectId.isValid(mapaRutaId)) {
     return res.status(400).json({ message: 'ID no válido' });
   }
 
   try {
     const db = getDB();
-    const result = await db.collection(collection_name).deleteOne({ _id: new ObjectId(iframeId) });
+    const result = await db.collection(collection_name).deleteOne({ _id: new ObjectId(mapaRutaId) });
 
     if (result.deletedCount === 0) {
       return res.status(404).json({ message: 'Mapa de ruta no encontrado' });
@@ -123,4 +123,3 @@ exports.deleteMapaRuta = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-//ok 2
