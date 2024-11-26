@@ -63,7 +63,7 @@ exports.loginUser = async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ message: 'Correo electrónico o contraseña incorrectos' });
     }
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '2h' });
     res.json({
       message: 'Inicio de sesión exitoso',
       userId: user._id,

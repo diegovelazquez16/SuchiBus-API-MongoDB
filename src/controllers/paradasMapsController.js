@@ -1,10 +1,9 @@
-const { getDB } = require('../../config');
+const { getDB, googleMapsApiKey } = require('../../config');
 const { ObjectId } = require('mongodb');
 const dotenv = require('dotenv');
 dotenv.config();
 
 const collection_name = 'puntosdeparada';
-const GOOGLE_MAPS_API_KEY = 'AIzaSyBoAgaxewurNrxSY1oMfTSS74aFdtp5EfY'; // Reemplaza con tu clave de API válida
 
 function generarPuntoParada(location, zoom = 14) {
     if (!location || typeof location !== 'string' || location.trim() === '') {
@@ -12,7 +11,7 @@ function generarPuntoParada(location, zoom = 14) {
     }
   
     const encodedLocation = encodeURIComponent(location.trim());
-    const puntoParadaURL = `https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_API_KEY}&q=${encodedLocation}&zoom=${zoom}`;
+    const puntoParadaURL = `https://www.google.com/maps/embed/v1/place?key=${googleMapsApiKey}&q=${encodedLocation}&zoom=${zoom}`;
     const puntoParadaHTML = `
       <iframe 
         width="600" 

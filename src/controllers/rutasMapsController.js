@@ -1,13 +1,12 @@
-const { getDB } = require('../../config');
+const { getDB, googleMapsApiKey } = require('../../config');
 const { ObjectId } = require('mongodb');
 const dotenv = require('dotenv');
 dotenv.config();
 
 const collection_name = 'pruebarutasmapas';
-const GOOGLE_MAPS_API_KEY = 'AIzaSyBoAgaxewurNrxSY1oMfTSS74aFdtp5EfY'; 
 
 function generarMapaRuta(origin, destination, mode = 'driving') {
-  const mapaRutaUrl = `https://www.google.com/maps/embed/v1/directions?key=${GOOGLE_MAPS_API_KEY}&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&mode=${mode}`;
+  const mapaRutaUrl = `https://www.google.com/maps/embed/v1/directions?key=${googleMapsApiKey}&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&mode=${mode}`;
   const mapaRutaHTML = `
     <iframe 
       width="600" 
