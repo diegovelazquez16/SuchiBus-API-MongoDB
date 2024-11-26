@@ -36,16 +36,16 @@ exports.getMapas = async (req, res) => {
 };
 
 exports.createMapa = async (req, res) => {
-    const { location, zoom, rutaId } = req.body;
+    const { location, zoom, ruta_id } = req.body;
   
     if (!location || typeof location !== 'string' || location.trim() === '') {
       return res.status(400).json({ message: 'El campo "location" es obligatorio y debe ser un texto válido.' });
     }
   
     try {
-      const { puntoParadaURL, puntoParadaHTML } = generarPuntoParada(location, zoom, rutaId);
+      const { puntoParadaURL, puntoParadaHTML } = generarPuntoParada(location, zoom, ruta_id);
   
-      const newMapa = { location, zoom, rutaId, puntoParadaURL, puntoParadaHTML };
+      const newMapa = { location, zoom, ruta_id, puntoParadaURL, puntoParadaHTML };
   
       const db = getDB();
       const result = await db.collection(collection_name).insertOne(newMapa);
@@ -57,6 +57,36 @@ exports.createMapa = async (req, res) => {
       res.status(500).json({ message: err.message });
     }
   };
+
+
+exports.getParadasByRutaId = async (req, res) => {
+  const { ruta_id } = req.params.id; 
+  
+  if (!ruta_id || typeof ruta_id !== 'string' || ruta_id.trim() === '') {
+    return res.status(400).json({ message: 'El campo "ruta_id" es obligatorio y debe ser un texto válido.' });
+  }
+
+  try {
+    const db = getDB(); 
+    const paradas = await db.collection(collection_name) // Cambia `collection_name` por el nombre de tu colección
+      .find({ ruta_id: ruta_id }) // Consulta para encontrar todas las paradas de esta ruta
+      .toArray(); // Convertir los resultados a un array
+
+    if (paradas.length === 0) {
+      return res.status(404).json({ message: 'No se encontraron paradas para esta ruta.' });
+    }
+
+    // Si se encuentran paradas, se devuelve la lista
+    res.status(200).json({
+      message: 'Paradas obtenidas correctamente.',
+      paradas: paradas,
+    });
+  } catch (err) {
+    console.error(err); // Log para facilitar la depuración
+    res.status(500).json({ message: err.message });
+  }
+};
+
   
 
 exports.getMapaById = async (req, res) => {
@@ -85,19 +115,19 @@ exports.updateMapa = async (req, res) => {
     return res.status(400).json({ message: 'ID de mapa no válido' });
   }
 
-  const { location, zoom, rutaId } = req.body;
+  const { location, zoom, ruta_id } = req.body;
 
   if (!location) {
     return res.status(400).json({ message: 'El campo "location" es obligatorio.' });
   }
 
   try {
-    const { puntoParadaURL, puntoParadaHTML } = generarPuntoParada(location, zoom, rutaId);
+    const { puntoParadaURL, puntoParadaHTML } = generarPuntoParada(location, zoom, ruta_id);
 
     const db = getDB();
     const result = await db.collection(collection_name).updateOne(
       { _id: new ObjectId(mapaId) },
-      { $set: { location, zoom,rutaId, puntoParadaURL, puntoParadaHTML } }
+      { $set: { location, zoom, ruta_id, puntoParadaURL, puntoParadaHTML } }
     );
 
     if (result.matchedCount === 0) {

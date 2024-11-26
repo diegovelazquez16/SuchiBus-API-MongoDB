@@ -1,11 +1,18 @@
 const express = require('express');
 const { connectDB } = require('./config');
 const dotenv = require('dotenv');
+const cors = require('cors'); // Importa CORS
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+app.use(cors({
+  origin: 'http://localhost:4200', 
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 app.use(express.json());
 connectDB();
