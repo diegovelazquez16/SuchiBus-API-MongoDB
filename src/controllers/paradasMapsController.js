@@ -25,6 +25,38 @@ function generarPuntoParada(location, zoom = 14) {
   }
   
 
+exports.createMapa = async (req, res) => {
+  const { location, zoom, rutaId } = req.body;
+
+  if (!location || typeof location !== 'string' || location.trim() === '') {
+    return res.status(400).json({ message: 'El campo "location" es obligatorio y debe ser un texto válido.' });
+  }
+  if (!ObjectId.isValid(rutaId)) {
+    return res.status(400).json({ message: 'El ID de ruta no es válido.' });
+  }
+
+  try {
+    const db = getDB();
+
+    const ruta = await db.collection('pruebarutasmapas').findOne({ _id: new ObjectId(rutaId) });
+    if (!ruta) {
+      return res.status(404).json({ message: 'La ruta especificada no existe.' });
+    }
+
+    const { puntoParadaURL, puntoParadaHTML } = generarPuntoParada(location, zoom);
+
+    const newMapa = { location, zoom, rutaId, puntoParadaURL, puntoParadaHTML };
+    const result = await db.collection(collection_name).insertOne(newMapa);
+
+    res.status(201).json({
+      message: 'Punto de parada creado exitosamente',
+      mapaId: result.insertedId,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 exports.getMapas = async (req, res) => {
   try {
     const db = getDB();
@@ -34,30 +66,6 @@ exports.getMapas = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-
-exports.createMapa = async (req, res) => {
-    const { location, zoom, rutaId } = req.body;
-  
-    if (!location || typeof location !== 'string' || location.trim() === '') {
-      return res.status(400).json({ message: 'El campo "location" es obligatorio y debe ser un texto válido.' });
-    }
-  
-    try {
-      const { puntoParadaURL, puntoParadaHTML } = generarPuntoParada(location, zoom, rutaId);
-  
-      const newMapa = { location, zoom, rutaId, puntoParadaURL, puntoParadaHTML };
-  
-      const db = getDB();
-      const result = await db.collection(collection_name).insertOne(newMapa);
-      res.status(201).json({
-        message: 'Punto de parada creado exitosamente',
-        mapaId: result.insertedId,
-      });
-    } catch (err) {
-      res.status(500).json({ message: err.message });
-    }
-  };
-  
 
 exports.getMapaById = async (req, res) => {
   const mapaId = req.params.id;
@@ -129,3 +137,26 @@ exports.deleteMapa = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+exports.getParadasByRutaId = async (req, res) => {
+  const rutaId = req.params.rutaId;
+
+  if (!ObjectId.isValid(rutaId)) {
+    return res.status(400).json({ message: 'El ID de ruta no es válido.' });
+  }
+
+  try {
+    const db = getDB();
+
+    const paradas = await db.collection('puntosdeparada').find({ rutaId: rutaId }).toArray();
+
+    if (paradas.length === 0) {
+      return res.status(404).json({ message: 'No se encontraron paradas para esta ruta.' });
+    }
+
+    res.json(paradas); 
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
