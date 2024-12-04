@@ -30,16 +30,16 @@ exports.getallMapasRutas = async (req, res) => {
 };
 
 exports.createMapaRuta = async (req, res) => {
-  const { origin, destination, mode, terminal } = req.body;
+  const { origin, destination, mode, terminal, nombre} = req.body;
 
   if (!origin || !destination) {
     return res.status(400).json({ message: 'Se requieren los campos "origin",  "destination y "terminal"' });
   }
 
   try {
-    const { mapaRutaUrl, mapaRutaHTML } = generarMapaRuta(origin, destination, mode, terminal);
+    const { mapaRutaUrl, mapaRutaHTML } = generarMapaRuta(origin, destination, mode, terminal, nombre);
 
-    const newIframe = { origin, destination, mode, terminal, mapaRutaUrl, mapaRutaHTML };
+    const newIframe = { origin, destination, mode, terminal, nombre, mapaRutaUrl, mapaRutaHTML };
 
     const db = getDB();
     const result = await db.collection(collection_name).insertOne(newIframe);
@@ -78,19 +78,19 @@ exports.updateMapaRuta = async (req, res) => {
     return res.status(400).json({ message: 'ID de iframe no válido' });
   }
 
-  const { origin, destination, mode, terminal } = req.body;
+  const { origin, destination, mode, terminal, nombre } = req.body;
 
   if (!origin || !destination) {
     return res.status(400).json({ message: 'Se requieren los campos "origin", "destination" y "terminal"' });
   }
 
   try {
-    const { iframeUrl, iframeHTML } = generarMapaRuta(origin, destination, mode, terminal);
+    const { iframeUrl, iframeHTML } = generarMapaRuta(origin, destination, mode, terminal, nombre);
 
     const db = getDB();
     const result = await db.collection(collection_name).updateOne(
       { _id: new ObjectId(mapaRutaId) },
-      { $set: { origin, destination, mode, terminal, iframeUrl, iframeHTML } }
+      { $set: { origin, destination, mode, terminal, nombre, iframeUrl, iframeHTML } }
     );
 
     if (result.matchedCount === 0) {
