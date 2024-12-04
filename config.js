@@ -3,9 +3,11 @@ const dotenv = require('dotenv');
 dotenv.config(); 
 const uri = process.env.MONGODB_URI;
 const dbName = process.env.MONGODB_DATABASE;
+const googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY;
 const client = new MongoClient(uri);
 
 let db; 
+
 
 const connectDB = async () => {
   try {
@@ -30,4 +32,4 @@ const getDB = () => {
   return db;
 };
 
-module.exports = { connectDB, getDB };
+module.exports = { connectDB, getDB, googleMapsApiKey };
